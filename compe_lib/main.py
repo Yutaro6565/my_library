@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.patches import Patch
 from PIL import Image, ImageDraw
+import numpy as np
+import compe_lib.sub as sub
+import compe_lib.sub_for_embedding as emb
+
 
 def make_image_from_pdf(input_folder,output_folder):
     os.makedirs(output_folder, exist_ok=True)
@@ -44,3 +48,17 @@ def make_image_from_pdf(input_folder,output_folder):
     
         # Close the PDF file
         pdf_document.close()
+
+def devide_md(md_path):
+    with open(md_path, 'r', encoding='utf-8') as f:
+        md_text = f.read()
+        
+    front_matter, md_body = extract_front_matter(md_text)
+    markdown_chunks = split_markdown_by_headers(md_body)
+    final_chunks = chunk_with_token_limit(markdown_chunks, max_tokens=512)
+    
+    for i, chunk in enumerate(final_chunks):
+        print(f"Chunk {i+1}:\n{chunk}\n{'-'*40}")
+        
+    return final_chunks
+
